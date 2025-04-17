@@ -16,6 +16,8 @@ However, it does abstract the algorithms, so it is possible to use this library 
 
 In fact, I've only gotten around to implementing `ES256`, because that's what I needed. But, it's "easy" to use CryptoKit do to this, and if you need something else open up an issue and we can get it going.
 
+This all came from work supporting DPoP as part of OAuth 2.1 in [OAuthenticator](https://github.com/ChimeHQ/OAuthenticator).
+
 ## Integration
 
 ```swift
