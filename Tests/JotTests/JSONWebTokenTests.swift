@@ -3,13 +3,6 @@ import Testing
 
 import Jot
 
-struct MockHeader : JSONWebTokenHeader, Equatable {
-	var alg: JSONWebTokenAlgorithm
-	var typ: String?
-	var kid: String?
-	var jwk: Jot.JSONWebKey?
-}
-
 struct MockPayload : JSONWebTokenPayload, Equatable {
 	let iss: String?
 	let sub: String?
@@ -22,14 +15,14 @@ struct MockPayload : JSONWebTokenPayload, Equatable {
 	let customClaim: String
 }
 
-typealias MockToken = JSONWebToken<MockHeader, MockPayload>
+typealias MockToken = JSONWebToken<MockPayload>
 
 struct JSONWebTokenTests {
 	@Test func headerCoding() throws {
-		let header = MockHeader(alg: .ES256, typ: "the_type", kid: "the_id")
+		let header = JSONWebTokenHeader(algorithm: .ES256)
 		
-		let data = try JSONEncoder().encode(header)
-		let decoded = try JSONDecoder().decode(MockHeader.self, from: data)
+		let data = try JSONEncoder.jsonWebTokenEncoder.encode(header)
+		let decoded = try JSONDecoder.jsonWebTokenDecoder.decode(JSONWebTokenHeader.self, from: data)
 		
 		#expect(header == decoded)
 	}
@@ -63,7 +56,7 @@ struct JSONWebTokenTests {
 	
 	@Test func tokenCoding() throws {
 		let token = MockToken(
-			header: MockHeader(alg: .ES256),
+			header: JSONWebTokenHeader(algorithm: .ES256),
 			payload: MockPayload(iss: nil, sub: nil, aud: nil, jti: nil, nbf: nil, iat: nil, exp: nil, customClaim: "claim")
 		)
 		
@@ -93,7 +86,7 @@ extension JSONWebTokenTests {
 		let key = P256.Signing.PrivateKey()
 		
 		let token = MockToken(
-			header: MockHeader(alg: .ES256),
+			header: JSONWebTokenHeader(algorithm: .ES256),
 			payload: MockPayload(iss: nil, sub: nil, aud: nil, jti: nil, nbf: nil, iat: nil, exp: nil, customClaim: "claim")
 		)
 		
@@ -110,7 +103,7 @@ extension JSONWebTokenTests {
 		let webKey = JSONWebKey(p256Key: key.publicKey)
 		
 		let token = MockToken(
-			header: MockHeader(alg: .ES256, jwk: webKey),
+			header: JSONWebTokenHeader(algorithm: .ES256, jwk: webKey),
 			payload: MockPayload(iss: nil, sub: nil, aud: nil, jti: nil, nbf: nil, iat: nil, exp: nil, customClaim: "claim")
 		)
 		
@@ -129,7 +122,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4
 			return true
 		}
 		
-		#expect(token.header.alg == .HS256)
+		#expect(token.header.algorithm == .HS256)
 		#expect(token.payload.customClaim == "claim")
 		#expect(token.payload.iat == Date(timeIntervalSince1970: 1516239022))
 	}

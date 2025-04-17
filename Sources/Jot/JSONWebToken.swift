@@ -19,17 +19,25 @@ public enum JSONWebTokenAlgorithm : String, Codable, Hashable, Sendable {
 	}
 }
 
-public protocol JSONWebTokenHeader : Codable {
-	var alg: JSONWebTokenAlgorithm { get }
-	var typ: String? { get }
-	var kid: String? { get }
-	var jwk: JSONWebKey? { get }
-}
-
-extension JSONWebTokenHeader {
-	public var typ: String? { nil }
-	public var kid: String? { nil }
-	public var jwk: JSONWebKey? { nil }
+public struct JSONWebTokenHeader : Codable, Hashable, Sendable {
+	public var algorithm: JSONWebTokenAlgorithm
+	public var type: String?
+	public var keyId: String?
+	public var jwk: JSONWebKey?
+		
+	enum CodingKeys: String, CodingKey {
+		case algorithm = "alg"
+		case type = "typ"
+		case keyId = "kid"
+		case jwk = "jwk"
+	}
+	
+	public init(algorithm: JSONWebTokenAlgorithm, type: String? = nil, keyId: String? = nil, jwk: JSONWebKey? = nil) {
+		self.algorithm = algorithm
+		self.type = type
+		self.keyId = keyId
+		self.jwk = jwk
+	}
 }
 
 public enum JSONWebTokenAudience : Hashable, Sendable {
@@ -71,44 +79,6 @@ extension JSONWebTokenAudience : Codable {
 	}
 }
 
-//public struct ConcretePayload<Claims: Codable> : Codable {
-//	var issuer: String?
-//	var subject: String?
-//	var audience: JSONWebTokenAudience?
-//	var uniqueCode: String?
-//	var notBefore: Date?
-//	var createdAt: Date?
-//	var expiresAt: Date?
-//	var customClaims: Claims
-//	
-//	enum CodingKeys: String, CodingKey {
-//		case issuer = "iss"
-//		case subject = "sub"
-//		case audience = "aud"
-//		case uniqueCode = "jti"
-//		case notBefore = "nbf"
-//		case createdAt = "iat"
-//		case expiresAt = "exp"
-//	}
-//	
-//	public init(from decoder: any Decoder) throws {
-//		<#code#>
-//	}
-//	
-//	public func encode(to encoder: any Encoder) throws {
-//		var container = encoder.container(keyedBy: CodingKeys.self)
-//		try container.encodeIfPresent(self.issuer, forKey: .issuer)
-//		try container.encodeIfPresent(self.subject, forKey: .subject)
-//		try container.encodeIfPresent(self.audience, forKey: .audience)
-//		try container.encodeIfPresent(self.uniqueCode, forKey: .uniqueCode)
-//		try container.encodeIfPresent(self.notBefore, forKey: .notBefore)
-//		try container.encodeIfPresent(self.createdAt, forKey: .createdAt)
-//		try container.encodeIfPresent(self.expiresAt, forKey: .expiresAt)
-//		
-//		try customClaims.encode(to: encoder)
-//	}
-//}
-
 public protocol JSONWebTokenPayload : Codable {
 	var issuer: String? { get }
 	var subject: String? { get }
@@ -132,11 +102,11 @@ extension JSONWebTokenPayload {
 public typealias JSONWebTokenSigner = (JSONWebTokenAlgorithm, Data) throws -> Data
 public typealias JSONWebTokenValidator = (JSONWebTokenAlgorithm, _ message: Data, _ signature: Data) throws -> Bool
 
-public struct JSONWebToken<Header: JSONWebTokenHeader, Payload: JSONWebTokenPayload> {
-	public let header: Header
+public struct JSONWebToken<Payload: JSONWebTokenPayload> {
+	public let header: JSONWebTokenHeader
 	public let payload: Payload
 	
-	public init(header: Header, payload: Payload) {
+	public init(header: JSONWebTokenHeader, payload: Payload) {
 		self.header = header
 		self.payload = payload
 	}
@@ -148,7 +118,7 @@ public struct JSONWebToken<Header: JSONWebTokenHeader, Payload: JSONWebTokenPayl
 		let payloadString = try encoder.encode(payload).base64EncodedURLEncodedString()
 		
 		let inputData = [headerString, payloadString].joined(separator: ".")
-		let signatureData = try signer(header.alg, Data(inputData.utf8))
+		let signatureData = try signer(header.algorithm, Data(inputData.utf8))
 
 		let signature = signatureData.base64EncodedURLEncodedString()
 		
@@ -156,9 +126,9 @@ public struct JSONWebToken<Header: JSONWebTokenHeader, Payload: JSONWebTokenPayl
 	}
 }
 
-extension JSONWebToken : Equatable where Header : Equatable, Payload : Equatable {}
-extension JSONWebToken : Hashable where Header : Hashable, Payload : Hashable {}
-extension JSONWebToken : Sendable where Header : Sendable, Payload : Sendable {}
+extension JSONWebToken : Equatable where Payload : Equatable {}
+extension JSONWebToken : Hashable where Payload : Hashable {}
+extension JSONWebToken : Sendable where Payload : Sendable {}
 
 extension JSONWebToken {
 	public init(encodedString: String, validator: JSONWebTokenValidator) throws {
@@ -177,12 +147,12 @@ extension JSONWebToken {
 		
 		let decoder = JSONDecoder.jsonWebTokenDecoder
 		
-		self.header = try decoder.decode(Header.self, from: headerData)
+		self.header = try decoder.decode(JSONWebTokenHeader.self, from: headerData)
 		self.payload = try decoder.decode(Payload.self, from: payloadData)
 		
 		let message = Data(components.dropLast().joined(separator: ".").utf8)
 		
-		guard try validator(self.header.alg, message, signatureData) else {
+		guard try validator(self.header.algorithm, message, signatureData) else {
 			throw JSONWebTokenError.signatureInvalid
 		}
 	}
