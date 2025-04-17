@@ -8,9 +8,22 @@ enum JSONWebTokenError : Error {
 }
 
 public enum JSONWebTokenAlgorithm : String, Codable, Hashable, Sendable {
-	case none
-	case ES256
 	case HS256
+	case HS384
+	case HS512
+	case RS256
+	case RS384
+	case RS512
+
+	case ES256
+	case ES384
+	case ES512
+	
+	case PS256
+	case PS384
+	case PS512
+	
+	case none
 	
 	public func check(_ other: JSONWebTokenAlgorithm) throws {
 		if self != other {

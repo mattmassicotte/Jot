@@ -14,6 +14,8 @@ There are a lot of really good libraries out there for handling this stuff. Howe
 
 However, it does abstract the algorithms, so it is possible to use this library with other cryptography systems if you'd like.
 
+In fact, I've only gotten around to implementing `ES256`, because that's what I needed. But, it's "easy" to use CryptoKit do to this, and if you need something else open up an issue and we can get it going.
+
 ## Integration
 
 ```swift
