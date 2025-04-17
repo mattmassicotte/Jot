@@ -93,23 +93,30 @@ extension JSONWebTokenAudience : Codable {
 }
 
 public protocol JSONWebTokenPayload : Codable {
-	var issuer: String? { get }
-	var subject: String? { get }
-	var audience: JSONWebTokenAudience? { get }
-	var uniqueCode: String? { get }
-	var notBefore: Date? { get }
-	var createdAt: Date? { get }
-	var expiresAt: Date? { get }
+	/// Issuer
+	var iss: String? { get }
+	/// Subject
+	var sub: String? { get }
+	/// Audience
+	var aud: JSONWebTokenAudience? { get }
+	/// Unique Code
+	var jti: String? { get }
+	/// Not Before
+	var nbf: Date? { get }
+	/// Created At
+	var iat: Date? { get }
+	/// Expires At
+	var exp: Date? { get }
 }
 
 extension JSONWebTokenPayload {
-	public var issuer: String? { nil }
-	public var subject: String? { nil }
-	public var audience: JSONWebTokenAudience? { nil }
-	public var uniqueCode: String? { nil }
-	public var notBefore: Date? { nil }
-	public var createdAt: Date? { nil }
-	public var expiresAt: Date? { nil }
+	public var iss: String? { nil }
+	public var sub: String? { nil }
+	public var aud: JSONWebTokenAudience? { nil }
+	public var jti: String? { nil }
+	public var nbf: Date? { nil }
+	public var iat: Date? { nil }
+	public var exp: Date? { nil }
 }
 
 public typealias JSONWebTokenSigner = (JSONWebTokenAlgorithm, Data) throws -> Data
