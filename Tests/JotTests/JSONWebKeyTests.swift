@@ -11,11 +11,10 @@ struct JSONWebKeyTests {
 			id: "keyid"
 		)
 		
-		let output = try JSONEncoder().encode(key)
+		let output = try JSONEncoder.jsonWebTokenEncoder.encode(key)
 		
-		let decoded = try JSONDecoder().decode(JSONWebKey.self, from: output)
+		let decoded = try JSONDecoder.jsonWebTokenDecoder.decode(JSONWebKey.self, from: output)
 		
 		#expect(key == decoded)
 	}
-	
 }
