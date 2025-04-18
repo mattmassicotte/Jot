@@ -49,4 +49,48 @@ extension JSONWebToken {
 		}
 	}
 }
+
+extension JSONWebToken {
+	public func encode(with key: SymmetricKey) throws -> String {
+		try encode { algo, data in
+			switch algo {
+			case .HS256:
+				let sig = HMAC<SHA256>.authenticationCode(for: data, using: key)
+				
+				return Data(sig)
+			case .HS384:
+				let sig = HMAC<SHA384>.authenticationCode(for: data, using: key)
+				
+				return Data(sig)
+			case .HS512:
+				let sig = HMAC<SHA512>.authenticationCode(for: data, using: key)
+				
+				return Data(sig)
+			default:
+				throw JSONWebTokenError.algorithmUnsupported(algo)
+			}
+		}
+	}
+	
+	public init(encodedString: String, key: SymmetricKey) throws {
+		try self.init(encodedString: encodedString) { algo, message, signature in
+			switch algo {
+			case .HS256:
+				let sig = HMAC<SHA256>.authenticationCode(for: message, using: key)
+				
+				return sig == signature
+			case .HS384:
+				let sig = HMAC<SHA384>.authenticationCode(for: message, using: key)
+				
+				return sig == signature
+			case .HS512:
+				let sig = HMAC<SHA512>.authenticationCode(for: message, using: key)
+				
+				return sig == signature
+			default:
+				throw JSONWebTokenError.algorithmUnsupported(algo)
+			}
+		}
+	}
+}
 #endif

@@ -10,11 +10,9 @@
 # Jot
 Very simple JWT/JWK library for Swift
 
-There are a lot of really good libraries out there for handling this stuff. However, many of them have the goal of supporting all possible cryptographic algorithms and non-Apple platforms. I just wanted something simple that worked with CryptoKit, so that's what this is.
+There are a lot of really good libraries out there for handling this stuff. However, many of them have the goal of supporting all possible cryptographic algorithms and non-Apple platforms. I just wanted something simple that worked with [CryptoKit](https://developer.apple.com/documentation/cryptokit/), so that's what this is.
 
 However, it does abstract the algorithms, so it is possible to use this library with other cryptography systems if you'd like.
-
-In fact, I've only gotten around to implementing `ES256`, because that's what I needed. But, it's "easy" to use CryptoKit do to this, and if you need something else open up an issue and we can get it going.
 
 This all came from work supporting DPoP as part of OAuth 2.1 in [OAuthenticator](https://github.com/ChimeHQ/OAuthenticator).
 
@@ -76,6 +74,10 @@ let token = try JSONWebToken<MyCustomPayload>(encodedString: tokenString) { algo
     // custom JSONWebTokenValidator implementation goes here
 }
 ```
+
+## Supported Algorithms
+
+Remember, this library supports bring-your-own-cyptography-system. But, when CryptoKit is available, there are some convenience implementations for `ES256`, `HS256`, `HS384`, `HS512`. If you need something else open up an issue and we can get it going.
 
 ## Contributing and Collaboration
 

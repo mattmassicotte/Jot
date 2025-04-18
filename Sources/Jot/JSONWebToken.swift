@@ -5,6 +5,7 @@ enum JSONWebTokenError : Error {
 	case structureInvalid
 	case base64DecodingFailed
 	case algorithmMismatch(JSONWebTokenAlgorithm, JSONWebTokenAlgorithm)
+	case algorithmUnsupported(JSONWebTokenAlgorithm)
 }
 
 public enum JSONWebTokenAlgorithm : String, Codable, Hashable, Sendable {

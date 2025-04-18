@@ -126,5 +126,62 @@ extension JSONWebTokenTests {
 		
 		#expect(decoded == token)
 	}
+	
+	@Test func hs256Signing() throws {
+		let key = SymmetricKey(data: Data("thekey".utf8))
+
+		let token = MockToken(
+			header: JSONWebTokenHeader(algorithm: .HS256, type: "JWT"),
+			payload: MockPayload(
+				iss: nil,
+				sub: "1234567890",
+				aud: nil,
+				jti: nil,
+				nbf: nil,
+				iat: Date(timeIntervalSince1970: 1516239022),
+				exp: nil,
+				customClaim: "claim"
+			)
+		)
+		
+		let encoded = try token.encode(with: key)
+
+		let tokenData = """
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21DbGFpbSI6ImNsYWltIiwiaWF0IjoxNTE2MjM5MDIyLCJzdWIiOiIxMjM0NTY3ODkwIn0.qfNgobhscI9_XCANUKYW0pbo1wf-wzdJ2JWAPFy-Sek
+"""
+
+		#expect(encoded == tokenData)
+
+		let decoded = try MockToken(encodedString: tokenData, key: key)
+		
+		#expect(decoded.header.algorithm == .HS256)
+		#expect(decoded.payload.customClaim == "claim")
+	}
+
+	@Test func hs384Signing() throws {
+		let key = SymmetricKey(data: Data("thekey".utf8))
+
+		let tokenData = """
+eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJjdXN0b21DbGFpbSI6ImNsYWltIiwiaWF0IjoxNTE2MjM5MDIyLCJzdWIiOiIxMjM0NTY3ODkwIn0.7POATYQLX8CgQL5jyZPzl-O1dhuzcpyxhgYTVOJESJl7x-4JD0QnePMl6sdHDatW
+"""
+
+		let token = try MockToken(encodedString: tokenData, key: key)
+		
+		#expect(token.header.algorithm == .HS384)
+		#expect(token.payload.customClaim == "claim")
+	}
+
+	@Test func hs512Signing() throws {
+		let key = SymmetricKey(data: Data("thekey".utf8))
+
+		let tokenData = """
+eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJjdXN0b21DbGFpbSI6ImNsYWltIiwiaWF0IjoxNTE2MjM5MDIyLCJzdWIiOiIxMjM0NTY3ODkwIn0.OVuT-eJQOrYLElNPpMJOf3iHcSgXEj9FJkh_C0hd8g9ufWdcvXxayhqgjIcckOJ3WNSkEMOATUUWiO06AujC_A
+"""
+
+		let token = try MockToken(encodedString: tokenData, key: key)
+		
+		#expect(token.header.algorithm == .HS512)
+		#expect(token.payload.customClaim == "claim")
+	}
 }
 #endif
