@@ -76,6 +76,19 @@ struct JSONWebTokenTests {
 		
 		#expect(decoded == token)
 	}
+	
+	@Test func tokenDecode() throws {
+		let tokenData = """
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJjdXN0b21DbGFpbSI6ImNsYWltIn0.Gpk1tPiut0i6rG9fXWI1cNh61me3qa8bTcEDMSwmD2I
+"""
+		let token = try MockToken(encodedString: tokenData) { _, _, _ in
+			return true
+		}
+		
+		#expect(token.header.algorithm == .HS256)
+		#expect(token.payload.customClaim == "claim")
+		#expect(token.payload.iat == Date(timeIntervalSince1970: 1516239022))
+	}
 }
 
 #if canImport(CryptoKit)
@@ -112,19 +125,6 @@ extension JSONWebTokenTests {
 		let decoded = try MockToken(encodedString: output, key: key.publicKey)
 		
 		#expect(decoded == token)
-	}
-	
-	@Test func tokenDecode() throws {
-		let tokenData = """
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJjdXN0b21DbGFpbSI6ImNsYWltIn0.Gpk1tPiut0i6rG9fXWI1cNh61me3qa8bTcEDMSwmD2I
-"""
-		let token = try MockToken(encodedString: tokenData) { _, _, _ in
-			return true
-		}
-		
-		#expect(token.header.algorithm == .HS256)
-		#expect(token.payload.customClaim == "claim")
-		#expect(token.payload.iat == Date(timeIntervalSince1970: 1516239022))
 	}
 }
 #endif
