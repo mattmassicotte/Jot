@@ -30,7 +30,7 @@ dependencies: [
 import Jot
 
 // Define your custom payload. You can omit fields that you do not need.
-struct MyCustomPayload : JSONWebTokenPayload {
+struct MyCustomPayload: JSONWebTokenPayload {
     let iss: String?
     let sub: String?
     let aud: JSONWebTokenAudience?
