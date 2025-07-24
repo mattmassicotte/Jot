@@ -3,7 +3,7 @@ import Testing
 
 import Jot
 
-struct MockPayload : JSONWebTokenPayload, Equatable {
+struct MockPayload: JSONWebTokenPayload, Equatable {
 	let iss: String?
 	let sub: String?
 	let aud: JSONWebTokenAudience?

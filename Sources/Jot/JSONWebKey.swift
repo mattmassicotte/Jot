@@ -4,11 +4,11 @@ import Foundation
 ///
 /// Defined by: https://datatracker.ietf.org/doc/html/rfc7517
 public struct JSONWebKey: Hashable, Sendable {
-	public enum EllipticCurve : String, Hashable, Codable, Sendable {
+	public enum EllipticCurve: String, Hashable, Codable, Sendable {
 		case P256 = "P-256"
 	}
 	
-	public struct EllipticCurveParameters : Hashable, Sendable {
+	public struct EllipticCurveParameters: Hashable, Sendable {
 		public let curve: EllipticCurve
 		public let x: Data
 		public let y: Data
@@ -20,12 +20,12 @@ public struct JSONWebKey: Hashable, Sendable {
 		}
 	}
 	
-	public enum KeyType : Hashable, Sendable {
+	public enum KeyType: Hashable, Sendable {
 		case rsa
 		case ec(EllipticCurveParameters)
 	}
 	
-	public enum KeyUse : RawRepresentable, Hashable, Sendable {
+	public enum KeyUse: RawRepresentable, Hashable, Sendable {
 		case signature
 		case encryption
 		case custom(String)
@@ -68,7 +68,7 @@ public struct JSONWebKey: Hashable, Sendable {
 	}
 }
 
-extension JSONWebKey : Codable {
+extension JSONWebKey: Codable {
 	enum CodingKeys: String, CodingKey {
 		case keyType = "kty"
 		case use

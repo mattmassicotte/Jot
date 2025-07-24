@@ -1,6 +1,6 @@
 import Foundation
 
-enum JSONWebTokenError : Error {
+enum JSONWebTokenError: Error {
 	case signatureInvalid
 	case structureInvalid
 	case base64DecodingFailed
@@ -8,7 +8,7 @@ enum JSONWebTokenError : Error {
 	case algorithmUnsupported(JSONWebTokenAlgorithm)
 }
 
-public enum JSONWebTokenAlgorithm : String, Codable, Hashable, Sendable {
+public enum JSONWebTokenAlgorithm: String, Codable, Hashable, Sendable {
 	case HS256
 	case HS384
 	case HS512
@@ -33,7 +33,7 @@ public enum JSONWebTokenAlgorithm : String, Codable, Hashable, Sendable {
 	}
 }
 
-public struct JSONWebTokenHeader : Codable, Hashable, Sendable {
+public struct JSONWebTokenHeader: Codable, Hashable, Sendable {
 	public var algorithm: JSONWebTokenAlgorithm
 	public var type: String?
 	public var keyId: String?
@@ -54,12 +54,12 @@ public struct JSONWebTokenHeader : Codable, Hashable, Sendable {
 	}
 }
 
-public enum JSONWebTokenAudience : Hashable, Sendable {
+public enum JSONWebTokenAudience: Hashable, Sendable {
 	case single(String)
 	case array([String])
 }
 
-extension JSONWebTokenAudience : Codable {
+extension JSONWebTokenAudience: Codable {
 	public init(from decoder: any Decoder) throws {
 		let container = try decoder.singleValueContainer()
 		
@@ -93,7 +93,7 @@ extension JSONWebTokenAudience : Codable {
 	}
 }
 
-public protocol JSONWebTokenPayload : Codable {
+public protocol JSONWebTokenPayload: Codable {
 	/// Issuer
 	var iss: String? { get }
 	/// Subject
@@ -147,9 +147,9 @@ public struct JSONWebToken<Payload: JSONWebTokenPayload> {
 	}
 }
 
-extension JSONWebToken : Equatable where Payload : Equatable {}
-extension JSONWebToken : Hashable where Payload : Hashable {}
-extension JSONWebToken : Sendable where Payload : Sendable {}
+extension JSONWebToken: Equatable where Payload: Equatable {}
+extension JSONWebToken: Hashable where Payload: Hashable {}
+extension JSONWebToken: Sendable where Payload: Sendable {}
 
 extension JSONWebToken {
 	public init(encodedString: String, validator: JSONWebTokenValidator) throws {
